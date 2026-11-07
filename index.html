@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Translate — hear it everywhere</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 fill=%22%23070a0c%22/><rect x=%226%22 y=%225%22 width=%224%22 height=%2222%22 fill=%22%23f0a43a%22/><text x=%2214%22 y=%2222%22 font-family=%22Arial Narrow%22 font-size=%2212%22 fill=%22%23e9e1ce%22>T</text></svg>">
+  <meta name="description" content="Hear your master on a phone, laptop, earbuds, car, club and mono — loudness matched, in your browser, with nothing uploaded." />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <div>
+          <h1>Translate</h1>
+          <p>hear it everywhere</p>
+        </div>
+      </div>
+
+      <div class="topbar-center">
+        <span class="rule"></span>
+        <span class="kicker">Playback translation check · No. 06</span>
+        <span class="rule"></span>
+      </div>
+
+      <div class="privacy" title="All decoding, analysis and playback happen in this browser tab.">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="5" y="10" width="14" height="10" rx="2"></rect>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+        </svg>
+        <span>NOTHING LEAVES THIS MACHINE</span>
+      </div>
+    </header>
+
+    <main class="stage">
+      <!-- left: source -->
+      <section class="library panel">
+        <div class="panel-head">
+          <span class="kicker">01 / Source</span>
+          <span class="kicker dim" id="sourceState">Empty</span>
+        </div>
+
+        <div class="drop" id="drop">
+          <div class="drop-icon">
+            <svg viewBox="0 0 48 48" aria-hidden="true">
+              <path d="M24 32V10"></path>
+              <path d="M16 18l8-8 8 8"></path>
+              <path d="M8 30v6a4 4 0 0 0 4 4h24a4 4 0 0 0 4-4v-6"></path>
+            </svg>
+          </div>
+          <h2>Drop a master</h2>
+          <p>WAV &middot; AIFF &middot; MP3 &middot; FLAC</p>
+          <button class="ghost" id="browse">Choose a file</button>
+          <button class="textlink" id="demo">or hear the demo loop <span>&rarr;</span></button>
+          <input type="file" id="file" accept="audio/*,.wav,.aiff,.aif,.mp3,.flac,.m4a" hidden />
+        </div>
+
+        <div class="track" id="track" hidden>
+          <div class="track-title">
+            <div>
+              <span class="kicker dim">Now loaded</span>
+              <h2 id="trackName">—</h2>
+            </div>
+            <button class="icon-btn" id="replace" title="Load another file">
+              <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.6-5.7L20 8"></path><path d="M20 4v4h-4"></path><path d="M20 12a8 8 0 0 1-13.6 5.7L4 16"></path><path d="M4 20v-4h4"></path></svg>
+            </button>
+          </div>
+
+          <div class="wave-wrap">
+            <canvas id="waveform"></canvas>
+            <canvas id="playhead"></canvas>
+            <div class="wave-hint">CLICK TO SEEK</div>
+          </div>
+
+          <div class="mini-stats">
+            <div class="mini">
+              <span class="kicker dim">Integrated</span>
+              <strong id="statLufs">—</strong><em>LUFS</em>
+            </div>
+            <div class="mini">
+              <span class="kicker dim">True peak</span>
+              <strong id="statPeak">—</strong><em>dBTP</em>
+            </div>
+            <div class="mini">
+              <span class="kicker dim">Width</span>
+              <strong id="statWidth">—</strong><em>%</em>
+            </div>
+          </div>
+
+          <div class="track-meta" id="trackMeta">—</div>
+
+          <div class="caveat">
+            <span class="kicker">Honest caveat</span>
+            <p>These are models, not measurements of specific hardware. Use them to reveal balance problems, not to master for one device.</p>
+          </div>
+
+          <div class="method">
+            <span class="kicker">How to use it</span>
+            <div class="method-row"><b>01</b><p><strong>Listen perceptually matched.</strong> Systems are trimmed by A-weighted loudness, not just LUFS, so you judge tone, not volume.</p></div>
+            <div class="method-row"><b>02</b><p><strong>A/B blind.</strong> Press B. The labels become A/B; switch until you can pick the processed one.</p></div>
+            <div class="method-row"><b>03</b><p><strong>Fix what disappears.</strong> The report measures what each system removes. Check those ranges on your master.</p></div>
+          </div>
+
+          <div class="privacy-note">
+            <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+            Decoded and analysed locally. No upload, no account.
+          </div>
+        </div>
+      </section>
+
+      <!-- center: playback systems -->
+      <section class="listening">
+        <div class="listen-head">
+          <div>
+            <span class="kicker">02 / Listening on</span>
+            <h2 id="deviceTitle">Original mix</h2>
+          </div>
+          <div class="listen-tools">
+            <button class="match-mode" id="matchMode" disabled title="Match mode: A-weighted perceptual, integrated LUFS, or off">Match: A-wt</button>
+            <div class="match-badge" id="matchBadge" hidden>
+              <span class="dot"></span><span id="matchText">Perceptual match</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="device-grid" id="deviceGrid"></div>
+
+        <div class="listen-strip">
+          <div class="listen-tip">
+            <span class="kicker">What to listen for</span>
+            <p id="listenTip">Load a track, then choose a system. The report will show what changes and where to look.</p>
+          </div>
+          <div class="listen-metrics">
+            <div><span class="kicker dim">Low end</span><strong id="lmLow">—</strong></div>
+            <div><span class="kicker dim">Presence</span><strong id="lmPresence">—</strong></div>
+            <div><span class="kicker dim">Width</span><strong id="lmWidth">—</strong></div>
+          </div>
+        </div>
+
+        <div class="signal-path">
+          <span>YOUR MASTER</span><i></i><span>LEVEL MATCH</span><i></i><span>PLAYBACK MODEL</span><i></i><span>REPORT</span>
+        </div>
+
+        <div class="ab-bar" id="abBar">
+          <button class="ab-side active" id="sideA"><span class="ab-key">A</span><span class="ab-label">Original</span></button>
+          <button class="ab-side" id="sideB"><span class="ab-key">B</span><span class="ab-label">DEVICE</span></button>
+          <div class="ab-tools">
+            <button class="blind-btn" id="blind">Blind A/B</button>
+            <button class="reveal-btn" id="reveal" hidden>Reveal</button>
+          </div>
+        </div>
+
+        <div class="analysis-bar" id="analysisBar" hidden>
+          <div class="analysis-text"><span id="analysisLabel">Rendering playback systems…</span><em id="analysisCount">0 / 6</em></div>
+          <div class="progress"><i id="analysisFill"></i></div>
+        </div>
+      </section>
+
+      <!-- right: report -->
+      <aside class="report panel" id="reportPanel">
+        <div class="panel-head">
+          <span class="kicker">03 / Translation report</span>
+          <span class="kicker dim" id="reportState">Waiting</span>
+        </div>
+
+        <div class="report-empty" id="reportEmpty">
+          <div class="report-empty-mark">Δ</div>
+          <p>Load a track to see what each system does to the low end, the presence range and the stereo image.</p>
+        </div>
+
+        <div class="report-body" id="reportBody" hidden>
+          <div class="report-headline">
+            <span class="kicker amber" id="reportDevice">Phone</span>
+            <h3 id="reportHeadline">—</h3>
+          </div>
+
+          <div class="bands" id="bands"></div>
+
+          <div class="notes" id="notes"></div>
+        </div>
+
+        <div class="report-foot" id="reportFoot" hidden>
+          <span id="reportMatch">—</span>
+          <span class="dim" id="reportMatchNote">relative to the original, level matched</span>
+          <div class="report-actions">
+            <button class="copy-report" id="copyReport">Copy report</button>
+            <button class="copy-report" id="shareCard">Share card</button>
+          </div>
+        </div>
+
+        <div class="spectrum-wrap">
+          <div class="spectrum-head">
+            <span class="kicker dim">Tonal balance</span>
+            <span class="legend"><i class="orig"></i>Original <i class="dev"></i>Device</span>
+          </div>
+          <canvas id="spectrum"></canvas>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="transport">
+      <div class="transport-left">
+        <button class="play" id="play" disabled aria-label="Play">
+          <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"></path></svg>
+          <svg class="pause-icon" viewBox="0 0 24 24"><rect x="7" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect></svg>
+        </button>
+        <div class="time"><span id="timeNow">0:00</span><span class="dim">/</span><span id="timeTotal">0:00</span></div>
+      </div>
+
+      <div class="transport-mid">
+        <div class="scrub" id="scrub"><i id="scrubFill"></i><b id="scrubDot"></b></div>
+      </div>
+
+      <div class="transport-right">
+        <button class="toggle" id="loop" title="Loop">Loop</button>
+        <label class="volume">
+          <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"></path><path d="M16 9a4 4 0 0 1 0 6"></path></svg>
+          <input type="range" id="vol" min="0" max="1" step="0.01" value="0.9" />
+        </label>
+        <div class="hints"><span>SPACE</span> play <span>1–6</span> system <span>X</span> A/B <span>B</span> blind</div>
+      </div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
